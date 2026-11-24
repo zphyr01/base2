@@ -2,21 +2,22 @@ name: Build and deploy TypeScript API to Azure
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'server/**'
 
-    jobs:
-      build-and-deploy:
-        runs-on: ubuntu-latest
-        defaults:
-          run:
-            working-directory: ./server
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
 
-        steps:
-          - uses: actions/checkout@v4
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-           - name: Set up Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
@@ -29,7 +30,7 @@ on:
           npm run build
 
       - name: Prune devDependencies for smaller deployment
-        run: npm prune --production
+        run: npm prune --omit=dev
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
