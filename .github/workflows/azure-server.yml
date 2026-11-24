@@ -1,0 +1,39 @@
+name: Build and deploy TypeScript API to Azure
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'server/**'
+
+    jobs:
+      build-and-deploy:
+        runs-on: ubuntu-latest
+        defaults:
+          run:
+            working-directory: ./server
+
+        steps:
+          - uses: actions/checkout@v4
+
+           - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'npm'
+          cache-dependency-path: './server/package-lock.json'
+
+      - name: Install dependencies and build TypeScript
+        run: |
+          npm ci
+          npm run build
+
+      - name: Prune devDependencies for smaller deployment
+        run: npm prune --production
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'your-azure-app-name'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./server
