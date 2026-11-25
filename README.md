@@ -30,7 +30,7 @@ cp .env.example .env
 npm install
 npm run dev
 ```
-*Health check endpoint:* `http://localhost:5000/api/health`
+*Health check endpoint:* `http://localhost:4000/api/health`
 
 ### 2. Frontend (`client/`)
 ```bash
