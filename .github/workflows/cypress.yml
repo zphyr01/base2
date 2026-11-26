@@ -1,0 +1,55 @@
+name: Cypress E2E Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install and build backend
+        working-directory: ./server
+        run: |
+          npm ci
+          npm run typecheck
+          npm run build
+
+      - name: Start backend server
+        working-directory: ./server
+        env:
+          PORT: 4000
+        run: |
+          cp -n .env.example .env || true
+          npm start &
+
+      - name: Prepare client env
+        working-directory: ./client
+        run: cp -n .env.example .env.local || true
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: client
+          build: npm run build
+          start: npm start
+          wait-on: 'http://localhost:4000/api/health, http://localhost:3000'
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:4000
+
+      - name: Upload failure screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: client/cypress/screenshots
