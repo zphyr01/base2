@@ -6,13 +6,13 @@ An interactive web app for mastering low-level programming, from logic gates to 
 
 **Bit** is structured as a decoupled full-stack application prepped for zero-cost cloud deployment on **Microsoft Azure** with automated CI/CD via **GitHub Actions**.
 
-```mermaid
+<!-- ```mermaid
 graph LR
     User([User Browser]) -->|HTTPS| SWA[Azure Static Web Apps<br/>Next.js Frontend]
     SWA -->|REST API| AppService[Azure App Service<br/>Node.js + Express + TypeScript]
     GitHub[GitHub Repository] -.->|GitHub Actions CI/CD| SWA
     GitHub -.->|GitHub Actions CI/CD| AppService
-```
+``` -->
 
 ### Azure Services & Design
 * **Frontend (`client/`):** Built with **Next.js** and configured for **Azure Static Web Apps** (Free Tier) for global CDN delivery and automatic SSL.
@@ -41,3 +41,20 @@ npm run dev
 ```
 *Local app:* `http://localhost:3000`
 
+## Testing
+
+Cypress manages testing for this project
+
+### E2E testing
+
+```shell
+nmp run cy:run
+```
+
+### Component testing
+
+``` shell
+npx cypress run --component --spec "cypress/component/backend-status.cy.tsx"
+```
+
+Both tests can be run interactively via the GUI with `npm run cy:open`
